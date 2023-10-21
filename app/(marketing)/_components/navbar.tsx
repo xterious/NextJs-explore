@@ -1,10 +1,17 @@
 "use client";
+import { useConvexAuth } from "convex/react";
+
 import { useScrollTop } from "@/hooks/use-scroll-top";
+import { SignInButton, UserButton } from "@clerk/clerk-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
-import { ModeToggle } from "@/components/ui/mode-toggle";
+import { Spinner } from "@/components/spinner";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export const Navbar = () => {
+  const { isAuthenticated, isLoading } = useConvexAuth();
   const scrolled = useScrollTop();
 
   return (
@@ -16,6 +23,27 @@ export const Navbar = () => {
     >
       <Logo />
       <div className="md:ml-auto md:justify-end justify-between w-full flex items-center gap-x-2">
+        {isLoading && <Spinner />}
+        {!isAuthenticated && !isLoading && (
+          <>
+            <SignInButton mode="modal">
+              <Button variant="ghost" size="sm">
+                Log in
+              </Button>
+            </SignInButton>
+            <SignInButton mode="modal">
+              <Button size="sm">Get Kotion free</Button>
+            </SignInButton>
+          </>
+        )}
+        {isAuthenticated && !isLoading && (
+          <>
+            <Button variant="ghost" size="sm">
+              <Link href={"/documents"}>Enter Kotion</Link>
+            </Button>
+            <UserButton afterSignOutUrl="/" />
+          </>
+        )}
         <ModeToggle />
       </div>
     </div>
